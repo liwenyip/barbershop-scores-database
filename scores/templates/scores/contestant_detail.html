@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ contestant.name }}</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+{% include "scores/_nav.html" %}
+
+<h1>{{ contestant.name }}</h1>
+
+{% include "scores/_contestant_table.html" with contestantapps=contestant.contestantapp_set.all|dictsort:"contest.date" show_contest_col=True %}
+
+
+</body>
+</html>

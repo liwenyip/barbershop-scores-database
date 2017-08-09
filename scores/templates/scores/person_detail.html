@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ person.name }}</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+{% include "scores/_nav.html" %}
+
+<h1>{{ person.name }}</h1>
+
+{% if person.alias_of %}
+{{ person.name }} is better known as <a href="{% url 'scores:person_detail' person.alias_of.slug %}">{{ person.alias_of.name }}</a>
+{% endif %}
+
+<ul>
+    <li><a href="{% url 'scores:person_update' person.slug %}">My name is spelt wrong or I have changed my name</a></li>
+</ul>
+
+{% if quartet_performances.count > 0 %}
+<h2>Quartet Performances</h2>
+<p>{{ quartet_performances.count }} appearances</p>
+{% include "scores/_contestant_table.html" with contestantapps=quartet_performances show_contest_col=True %}
+{% endif %}
+
+{% if director_performances.count > 0 %}
+<h2>Choruses Performances as Director</h2>
+<p>{{ director_performances.count }} appearances</p>
+{% include "scores/_contestant_table.html" with contestantapps=director_performances show_contest_col=True %}
+{% endif %}
+
+{% if person.judge_set.count > 0 %}
+<h2>Judging Appearances</h2>
+<p>{{ person.judge_set.count }} appearances</p>
+    <table>
+        <thead>
+            <tr>
+                <th class="left">Date</th>
+                <th class="left">Year</th>
+                <th class="left">Assoc</th>
+                <th class="left">Contest</th>
+                <th class="left">Location</th>
+                <th class="left">Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for j in person.judge_set.all|dictsortreversed:"contest.date" %}
+            <tr>
+                <td class="left">{{ j.contest.date|date:"d M Y" }}</td>
+                <td class="left">{{ j.contest.year }}</td>
+                <td class="left">{{ j.contest.assoc }}</td>
+                <td class="left"><a href="{% url 'scores:contest_detail' j.contest.id %}">{{ j.contest.contest|title }}</a></td>
+                <td class="left">{{ j.contest.location|title }}</td>
+                <td class="left">{{ j.get_cat_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+</body>
+</html>

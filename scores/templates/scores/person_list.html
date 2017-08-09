@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Person Listing</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+    {% include "scores/_nav.html" %}
+
+
+    <h1>Person Listing</h1>
+
+    <form action="/scores/merge/person/" method="post">{% csrf_token %}
+        <!--<p><input type="submit" value="Merge Selected" /></p>-->
+        <table>
+            <thead>
+                <tr>
+                    <!--<th></th>-->
+                    <th>Name</th>
+                    <th>Quartet</th>
+                    <th>Chorus</th>
+                    <th>Judging</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in person_list|dictsort:"name" %}
+                <tr>
+                    <!--<td><input type="checkbox" name="person__id" value="{{p.id}}" /></td>-->
+                    <td><a href="{% url 'scores:person_detail' p.slug %}">{{ p.name }}</a></td>
+                    <td>{% if p.q_count != None %}{{ p.q_count }}{% endif %}</td>
+                    <td>{% if p.c_count != None %}{{ p.c_count }}{% endif %}</td>
+                    <td>{% if p.judge_set.all|length > 0 %}{{ p.judge_set.all|length }}{% endif %}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+</body>
+</html>

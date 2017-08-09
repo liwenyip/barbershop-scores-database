@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ object.name }}</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+{% include "scores/_nav.html" %}
+
+<h1>{{ object.name }}</h1>
+
+{% if song.alias_of %}
+{{ song.name }} is an alias of <a href="{% url 'scores:song_detail' song.alias_of.id %}">{{ song.alias_of.name }}</a>
+{% endif %}
+
+{% if quartet_performances.count > 0 %}
+<h2>Quartet Performances</h2>
+{% include "scores/_song_table.html" with song_list=quartet_performances %}
+{% endif %}
+
+{% if chorus_performances.count > 0 %}
+<h2>Chorus Performances </h2>
+{% include "scores/_song_table.html" with song_list=chorus_performances %}
+{% endif %}
+
+</body>
+</html>

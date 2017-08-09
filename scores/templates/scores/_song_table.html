@@ -1,0 +1,57 @@
+    <table>
+        <thead>
+            <tr>
+                <th class="left">Date</th>
+                <th class="left">Year</th>
+                <th class="left">Assoc</th>
+                <th class="left">Contest</th>
+                <th class="left">Contestant</th>
+                <th>M</th>
+                <th>P</th>
+                <th>S</th>
+                <th>Tot</th>
+                <th>M%</th>
+                <th>P%</th>
+                <th>S%</th>
+                <th>Tot%</th>
+                <th>Pax</th>
+                <th>Members</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% load humanize %}
+        {% for s in song_list %}
+            <tr class="song">
+                <td class="left">{{ s.contestantapp.contest.date|date:"d M Y" }}</td>
+                <td class="left">{{ s.contestantapp.contest.year }}</td>
+                <td class="left">{{ s.contestantapp.contest.assoc }}</td>
+                <td class="left">
+                    <a href="{% url 'scores:contest_detail' s.contestantapp.contest.id %}">{{s.contestantapp.contest.contest|title}}</a>
+                </td>
+                <td class="left">
+                    <a href="{% url 'scores:contestant_detail' s.contestantapp.contestant.slug %}">{{ s.contestantapp.contestant.name }}</a>
+                </td>
+                <td>{{s.m}}</td>
+                <td>{{s.p}}</td>
+                <td>{{s.s}}</td>
+                <td>{{s.tot_score}}</td>
+                <td>{{s.m_pc|floatformat:1}}</td>
+                <td>{{s.p_pc|floatformat:1}}</td>
+                <td>{{s.s_pc|floatformat:1}}</td>
+                <td>{{s.pc_score|floatformat:1}}</td>
+                <td>{% if s.contestantapp.size %} {{s.contestantapp.size}} {% else %} &nbsp; {% endif %}</td>
+                <td rowspan={{c.songapp_set.all|length|add:1}}>
+                    {% for m in s.contestantapp.member_set.all %}
+                    {{ m.get_part_display }}:
+                    {% if m.name == m.person.name %}
+                    <a href="{% url 'scores:person_detail' m.person.slug %}">{{ m.person.name }}</a>
+                    {% else %}
+                    <a href="{% url 'scores:person_detail' m.person.slug %}" title="{{ m.name }} on the original scoresheet">{{ m.person.name }}*</a>
+                    {% endif %}
+                    {% if not forloop.last %}<br /> {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>

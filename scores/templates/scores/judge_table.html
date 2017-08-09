@@ -1,0 +1,33 @@
+<table>
+    <thead>
+        <tr>
+            <th>Contest</th>
+            <th>Music</th>
+            <th>Performance</th>
+            <th>Singing</th>
+            <th>Contest Administration</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if judges %}
+        {% regroup judges|dictsort:"cat" by get_cat_display as judges_by_cat %}
+        <tr>
+
+        </tr>
+    </tbody>
+
+</table>
+
+
+
+    <ul>
+        {% for cat in judges_by_cat %}
+        <li>{{ cat.grouper }}
+            <ul>
+                {% for judge in cat.list %}
+                <li><a href="{% url 'scores:person_detail' judge.name %}">{{ judge.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>

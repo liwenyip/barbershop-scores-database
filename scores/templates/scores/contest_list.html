@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contest Listing</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+    {% include "scores/_nav.html" %}
+
+    <h1>Contest Listing</h1>
+
+    {% regroup object_list by assoc as contests_by_assoc %}
+    {% for assoc in contests_by_assoc %}
+    <h2>{{ assoc.grouper }}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="left">Year</th>
+                <th class="left">Contest</th>
+                <th class="left">Location</th>
+                <th class="left">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup assoc.list|dictsortreversed:"year" by year as contests_by_year %}
+            {% for year in contests_by_year %}
+            {% for c in year.list|dictsortreversed:"date" %}
+            <tr>
+                {% if forloop.first %}
+                <td class="left" rowspan="{{ year.list|length }}">{{ year.grouper }}</td>
+                {% endif %}
+                <td class="left">
+                    <a href="{% url 'scores:contest_detail' c.id %}">
+                        {{ c.contest|title }}
+                        {% if c.stream %}({{ c.get_stream_display }}){% endif %}
+                    </a>
+                </td>
+                <td class="left">{{ c.location|title }}</td>
+                <td class="left">{{ c.date|date:"d M Y" }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+
+
+</body>
+</html>

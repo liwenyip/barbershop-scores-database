@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Song Listing</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+    {% include "scores/_nav.html" %}
+
+    <h1>Song Listing</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">Name</th>
+                <th colspan="4">Quartet Scores</th>
+                <th colspan="4">Chorus Scores</th>
+            </tr>
+            <tr>
+                <th>Num</th>
+                <th>Min %</th>
+                <th>Avg %</th>
+                <th>Max %</th>
+                <th>Num</th>
+                <th>Min %</th>
+                <th>Avg %</th>
+                <th>Max %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in song_list|dictsort:"name" %}
+            <tr>
+                <td><a href="{% url 'scores:song_detail' s.slug %}">{{ s.name }}</a></td>
+                <td>{% if s.q_count != None %}{{s.q_count}}{% endif %}</td>
+                <td>{{s.q_min|floatformat:1}}</td>
+                <td>{{s.q_avg|floatformat:1}}</td>
+                <td>{{s.q_max|floatformat:1}}</td>
+                <td>{% if s.c_count != None %}{{s.c_count}}{% endif %}</td>
+                <td>{{s.c_min|floatformat:1}}</td>
+                <td>{{s.c_avg|floatformat:1}}</td>
+                <td>{{s.c_max|floatformat:1}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

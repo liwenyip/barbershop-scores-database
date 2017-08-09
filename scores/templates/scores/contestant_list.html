@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contestant Listing</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+    {% include "scores/_nav.html" %}
+
+
+    <h1>Contestant Listing</h1>
+
+    {% load humanize %}
+    {% regroup object_list|dictsort:"type" by get_type_display as contestants_by_type %}
+    {% for type in contestants_by_type %}
+    <h2>{{ type.grouper }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th class="left">Name</th>
+                <th class="left">Association</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in type.list|dictsort:"name" %}
+            <tr>
+                <td class="left"><a href="{% url 'scores:contestant_detail' c.slug %}">{{ c.name }}</a></td>
+                <td class="left">{{ c.assoc }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+</body>
+</html>

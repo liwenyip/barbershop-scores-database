@@ -1,0 +1,96 @@
+    <table>
+        <thead>
+            <tr>
+                {% if show_contest_col %}
+                <th class="left">Date</th>
+                <th class="left">Year</th>
+                <th class="left">Assoc</th>
+                <th class="left">Contest</th>
+                {% endif %}
+                <th>R</th>
+                <th>SR</th>
+                <th class="left">Contestant/Song</th>
+                <th>M</th>
+                <th>P</th>
+                <th>S</th>
+                <th>Tot</th>
+                <th>M%</th>
+                <th>P%</th>
+                <th>S%</th>
+                <th>Tot%</th>
+                <th>Pax</th>
+                <th>Members</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% load humanize %}
+        {% for c in contestantapps %}
+            <tr class="contestant">
+                {% if show_contest_col %}
+                <td class="left">{{ c.contest.date|date:"d M Y" }}</td>
+                <td class="left">{{ c.contest.year }}</td>
+                <td class="left">{{ c.contest.assoc }}</td>
+                <td class="left">
+                    <a href="{% url 'scores:contest_detail' c.contest.id %}">{{c.contest.contest|title}}</a>
+                </td>
+                {% endif %}
+                <td>{{c.rank}}</td>
+                <td>
+                    {% for sr in c.streamrank_set.all %}
+                    {{sr.stream}}{{sr.rank}}
+                    {% endfor %}
+                </td>
+                <td class="left">
+                    <a href="{% url 'scores:contestant_detail' c.contestant.slug %}">{{ c.contestant.name }}</a>
+                </td>
+                <td>{{c.m}}</td>
+                <td>{{c.p}}</td>
+                <td>{{c.s}}</td>
+                <td>{{c.tot_score}}</td>
+                <td>{{c.m_pc|floatformat:1}}</td>
+                <td>{{c.p_pc|floatformat:1}}</td>
+                <td>{{c.s_pc|floatformat:1}}</td>
+                <td>{{c.pc_score}}</td>
+                <td>{% if c.size %} {{c.size}} {% else %} &nbsp; {% endif %}</td>
+                <td rowspan={{c.songapp_set.all|length|add:1}}>
+                    {% for m in c.member_set.all %}
+                    {{ m.get_part_display }}:
+                    {% if m.name == m.person.name %}
+                    <a href="{% url 'scores:person_detail' m.person.slug %}">{{ m.person.name }}</a>
+                    {% else %}
+                    <a href="{% url 'scores:person_detail' m.person.slug %}" title="{{ m.name }} on the original scoresheet">{{ m.person.name }}*</a>
+                    {% endif %}
+                    {% if not forloop.last %}<br /> {% endif %}
+                    {% endfor %}
+                </td>
+
+            </tr>
+            {% for s in c.songapp_set.all %}
+            <tr class="song">
+                {% if show_contest_col %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                {% endif %}
+                <td></td>
+                <td></td>
+                <td class="left">
+                    {% if s.song.name == "Previous" %}{{s.song.name}}{% else %}
+                    <a href="{% url 'scores:song_detail' s.song.slug %}">{{s.song.name}}</a>
+                    {% endif %}
+                </td>
+                <td>{{s.m}}</td>
+                <td>{{s.p}}</td>
+                <td>{{s.s}}</td>
+                <td>{{s.tot_score}}</td>
+                <td>{{s.m_pc|floatformat:1}}</td>
+                <td>{{s.p_pc|floatformat:1}}</td>
+                <td>{{s.s_pc|floatformat:1}}</td>
+                <td>{{s.pc_score|floatformat:1}}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>

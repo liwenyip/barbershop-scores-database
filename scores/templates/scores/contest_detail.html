@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contest Detail</title>
+    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
+</head>
+<body>
+
+    {% include "scores/_nav.html" %}
+
+    <h1>Contest Details</h1>
+
+    <ul>
+        <li>Association: {{contest.assoc}}</li>
+        <li>Contest: {{contest.contest}}</li>
+        <li>Stream: {{contest.get_stream_display}}</li>
+        <li>Year: {{contest.year}}</li>
+        <li>Location: {{contest.location}}</li>
+        <li>Date: {{contest.date|date:"d M Y"}}</li>
+        <li>Type: {{contest.get_type_display }}</li>
+        <li>Original scoresheet(s):
+            <ul>
+                {% for url in contest.contesturl_set.all %}
+                <li><a href="{{url.url}}">{{url.url}}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Contestants</h2>
+
+    {% include "scores/_contestant_table.html" with contestantapps=contest.contestantapp_set.all|dictsortreversed:"tot_score" %}
+
+    <h2>Judges</h2>
+
+    {% regroup contest.judge_set.all|dictsort:"cat" by get_cat_display as judges_by_cat %}
+    <ul>
+        {% for cat in judges_by_cat %}
+        <li>{{ cat.grouper }}
+            <ul>
+                {% for judge in cat.list %}
+                <li><a href="{% url 'scores:person_detail' judge.person.slug %}">{{ judge.person.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Raw Text</h2>
+
+    {{contest.raw_text}}
+
+
+</body>
+</html>
