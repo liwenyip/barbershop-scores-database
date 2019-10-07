@@ -1,4 +1,83 @@
-    <table>
+    <style>
+      /* hide unwanted stuff */
+      .table-contestant.hide-points .points, .table-contestant.hide-percent .percent {
+        display: none;
+      }
+      .table-contestant.hidemembers span.members {
+        display: none;
+      }
+      .table-contestant.hidecats .cat {
+        display: none;
+      }
+      .table-contestant.hidesongs .song {
+        display: none;
+      }
+
+      /* bold the contestant total score, only if category or song scores also shown */
+      tr.contestant td.tot,  tr.contestant span.name {
+        font-weight: bold;
+      }
+      .table-contestant.hidecats.hidesongs td.tot, .table-contestant.hidesongs td.name {
+        font-weight: normal;
+      }
+
+      /* presentation */
+      tr.song td.name {
+        padding-left: 2em;
+      }
+      span.members {
+        font-size: 70%;
+      }
+      tr.song td {
+        border-top: none;
+      }
+      .table-contestant td, .table-contestant th {
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+      }
+      a {
+        color: #212529;
+      }
+      tr.contestant span.name {
+        font-size: 120%;
+      }
+
+    </style>
+
+
+
+
+
+    <div class="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar">
+      <div class="btn-group m-1" role="group" aria-label="Show points or percentages">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Scores</div>
+        </div>
+        <button type="button" class="btn_score btn btn-primary" id="btn_percent">%</button>
+        <button type="button" class="btn_score btn btn-secondary" id="btn_points">Points</button>
+        <button type="button" class="btn_score btn btn-secondary" id="btn_both">Both</button>
+      </div>
+      <div class="btn-group m-1" role="group" aria-label="Second group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Show</div>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn_songs">Songs</button>
+        <button type="button" class="btn btn-primary" id="btn_cats">MPS</button>
+        <button type="button" class="btn btn-primary" id="btn_members">Members</button>
+      </div>
+      <div class="btn-group m-1" role="group" aria-label="Second group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Streams</div>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn_n">N</button>
+        <button type="button" class="btn btn-primary" id="btn_y">Y</button>
+        <button type="button" class="btn btn-primary" id="btn_s">S</button>
+        <button type="button" class="btn btn-primary" id="btn_i">I</button>
+      </div>
+
+    </div>
+
+    <table class="table table-responsive table-contestant hide-points">
         <thead>
             <tr>
                 {% if show_contest_col %}
@@ -9,17 +88,16 @@
                 {% endif %}
                 <th>R</th>
                 <th>SR</th>
-                <th class="left">Contestant/Song</th>
-                <th>M</th>
-                <th>P</th>
-                <th>S</th>
-                <th>Tot</th>
-                <th>M%</th>
-                <th>P%</th>
-                <th>S%</th>
-                <th>Tot%</th>
+                <th class="left">Contestant<span class="song">/Song</span></th>
+                <th class="cat points">M</th>
+                <th class="cat points">P</th>
+                <th class="cat points">S</th>
+                <th class="tot points">Tot</th>
+                <th class="cat percent">M%</th>
+                <th class="cat percent">P%</th>
+                <th class="cat percent">S%</th>
+                <th class="tot percent">Tot%</th>
                 <th>Pax</th>
-                <th>Members</th>
             </tr>
         </thead>
         <tbody>
@@ -40,19 +118,12 @@
                     {{sr.stream}}{{sr.rank}}
                     {% endfor %}
                 </td>
-                <td class="left">
+                <td>
+                  <span class="name">
                     <a href="{% url 'scores:contestant_detail' c.contestant.slug %}">{{ c.contestant.name }}</a>
-                </td>
-                <td>{{c.m}}</td>
-                <td>{{c.p}}</td>
-                <td>{{c.s}}</td>
-                <td>{{c.tot_score}}</td>
-                <td>{{c.m_pc|floatformat:1}}</td>
-                <td>{{c.p_pc|floatformat:1}}</td>
-                <td>{{c.s_pc|floatformat:1}}</td>
-                <td>{{c.pc_score}}</td>
-                <td>{% if c.size %} {{c.size}} {% else %} &nbsp; {% endif %}</td>
-                <td rowspan={{c.songapp_set.all|length|add:1}}>
+                  </span>
+                  <br />
+                  <span class="members">
                     {% for m in c.member_set.all %}
                     {{ m.get_part_display }}:
                     {% if m.name == m.person.name %}
@@ -60,10 +131,19 @@
                     {% else %}
                     <a href="{% url 'scores:person_detail' m.person.slug %}" title="{{ m.name }} on the original scoresheet">{{ m.person.name }}*</a>
                     {% endif %}
-                    {% if not forloop.last %}<br /> {% endif %}
+                    {% if not forloop.last %}, {% endif %}
                     {% endfor %}
+                  </span>
                 </td>
-
+                <td class="cat points ">{{c.m}}</td>
+                <td class="cat points">{{c.p}}</td>
+                <td class="cat points">{{c.s}}</td>
+                <td class="tot points">{{c.tot_score}}</td>
+                <td class="cat percent">{{c.m_pc|floatformat:1}}</td>
+                <td class="cat percent">{{c.p_pc|floatformat:1}}</td>
+                <td class="cat percent">{{c.s_pc|floatformat:1}}</td>
+                <td class="tot percent">{{c.pc_score}}</td>
+                <td class="pax">{% if c.size %} {{c.size}} {% else %} &nbsp; {% endif %}</td>
             </tr>
             {% for s in c.songapp_set.all %}
             <tr class="song">
@@ -75,22 +155,59 @@
                 {% endif %}
                 <td></td>
                 <td></td>
-                <td class="left">
+                <td class="name left">
                     {% if s.song.name == "Previous" %}{{s.song.name}}{% else %}
                     <a href="{% url 'scores:song_detail' s.song.slug %}">{{s.song.name}}</a>
                     {% endif %}
                 </td>
-                <td>{{s.m}}</td>
-                <td>{{s.p}}</td>
-                <td>{{s.s}}</td>
-                <td>{{s.tot_score}}</td>
-                <td>{{s.m_pc|floatformat:1}}</td>
-                <td>{{s.p_pc|floatformat:1}}</td>
-                <td>{{s.s_pc|floatformat:1}}</td>
-                <td>{{s.pc_score|floatformat:1}}</td>
-                <td></td>
+                <td class="cat points">{{s.m}}</td>
+                <td class="cat points">{{s.p}}</td>
+                <td class="cat points">{{s.s}}</td>
+                <td class="tot points">{{s.tot_score}}</td>
+                <td class="cat percent">{{s.m_pc|floatformat:1}}</td>
+                <td class="cat percent">{{s.p_pc|floatformat:1}}</td>
+                <td class="cat percent">{{s.s_pc|floatformat:1}}</td>
+                <td class="tot percent">{{s.pc_score|floatformat:1}}</td>
+                <td class="pax"></td>
             </tr>
             {% endfor %}
         {% endfor %}
         </tbody>
     </table>
+
+    <script type="text/javascript">
+      // Set up buttons to show/hide songs, category scores, members
+      function setupHideButton(button, targetClass) {
+        $(button).click(function() {
+          $('.table-contestant').toggleClass(targetClass);
+          $(button).toggleClass('btn-secondary');
+          $(button).toggleClass('btn-primary');
+        });
+      }
+      setupHideButton('#btn_songs', 'hidesongs');
+      setupHideButton('#btn_cats', 'hidecats');
+      setupHideButton('#btn_members', 'hidemembers');
+
+      // Set up buttons to show scores as points/percent/both
+      function setupScoreButton(button, hidePoints, hidePercent) {
+        $(button).click(function() {
+          if (hidePercent) {
+            $('.table-contestant').addClass('hide-percent');
+          } else {
+            $('.table-contestant').removeClass('hide-percent');
+          }
+          if (hidePoints) {
+            $('.table-contestant').addClass('hide-points');
+          } else {
+            $('.table-contestant').removeClass('hide-points');
+          }
+          $('.btn_score').removeClass('btn-primary');
+          $('.btn_score').addClass('btn-secondary');
+          $(button).removeClass('btn-secondary');
+          $(button).addClass('btn-primary');
+        });
+      }
+      setupScoreButton('#btn_percent', hidePoints=true, hidePercent=false);
+      setupScoreButton('#btn_points', hidePoints=false, hidePercent=true);
+      setupScoreButton('#btn_both', hidePoints=false, hidePercent=false);
+    </script>

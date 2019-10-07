@@ -1,21 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contest Listing</title>
-    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
-</head>
-<body>
+{% extends "scores/base.html" %}
 
-    {% include "scores/_nav.html" %}
+{% block title %}Contest Listing{% endblock %}
+{% block h1 %}Contest Listing{% endblock %}
+{% block content %}
 
-    <h1>Contest Listing</h1>
 
     {% regroup object_list by assoc as contests_by_assoc %}
     {% for assoc in contests_by_assoc %}
     <h2>{{ assoc.grouper }}</h2>
 
-    <table>
+    <table class="table table-responsive table-hover">
         <thead>
             <tr>
                 <th class="left">Year</th>
@@ -47,7 +41,4 @@
     </table>
     {% endfor %}
 
-
-
-</body>
-</html>
+{% endblock %}

@@ -1,32 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contest Detail</title>
-    <link rel="stylesheet" type="text/css" href="{% load static %}{% static "scores/tables.css" %}">
-</head>
-<body>
+{% extends "scores/base.html" %}
 
-    {% include "scores/_nav.html" %}
+{% block title %}Contest Detail{% endblock %}
+{% block h1 %}Contest Detail{% endblock %}
+{% block content %}
 
-    <h1>Contest Details</h1>
-
-    <ul>
-        <li>Association: {{contest.assoc}}</li>
-        <li>Contest: {{contest.contest}}</li>
-        <li>Stream: {{contest.get_stream_display}}</li>
-        <li>Year: {{contest.year}}</li>
-        <li>Location: {{contest.location}}</li>
-        <li>Date: {{contest.date|date:"d M Y"}}</li>
-        <li>Type: {{contest.get_type_display }}</li>
-        <li>Original scoresheet(s):
-            <ul>
-                {% for url in contest.contesturl_set.all %}
-                <li><a href="{{url.url}}">{{url.url}}</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-    </ul>
+    <div class="card">
+      <div class="card-body">
+        <p>
+          {{contest.assoc}}
+          {{contest.year}}
+          {% if contest.strea %}{{contest.get_stream_display}}{% endif %}
+          {{contest.contest}} contest held
+          {% if contest.location %}at {{contest.location}}{% endif %}
+          {% if contest.date %}on {{contest.date|date:"d M Y"}}{% endif %}
+        </p>
+        <ul>
+            <li>Type: {{contest.get_type_display }}</li>
+            <li>Original scoresheet(s):
+                <ul>
+                    {% for url in contest.contesturl_set.all %}
+                    <li><a href="{{url.url}}">{{url.url}}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
 
     <h2>Contestants</h2>
 
@@ -35,22 +34,29 @@
     <h2>Judges</h2>
 
     {% regroup contest.judge_set.all|dictsort:"cat" by get_cat_display as judges_by_cat %}
-    <ul>
-        {% for cat in judges_by_cat %}
-        <li>{{ cat.grouper }}
-            <ul>
-                {% for judge in cat.list %}
-                <li><a href="{% url 'scores:person_detail' judge.person.slug %}">{{ judge.person.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-    </ul>
+
+    <div class="row">
+      {% for cat in judges_by_cat %}
+      <div class="col-md py-1">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">{{ cat.grouper }}</h5>
+          </div>
+          <div class="card-body">
+            {% for judge in cat.list %}
+            <p class="card-text">
+              <a href="{% url 'scores:person_detail' judge.person.slug %}">{{ judge.person.name }}</a>
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
 
     <h2>Raw Text</h2>
 
     {{contest.raw_text}}
 
-
-</body>
-</html>
+{% endblock %}

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'dal',
     'dal_select2',
     'nested_admin',
+    'bootstrap3',
     'scores.apps.ScoresConfig',
     'django.contrib.admin',
     'django.contrib.auth',
